@@ -1,17 +1,15 @@
-mod rng;
+use crate::rng::*;
 
-use rng::*;
+pub const GROUND: u8 = 63;
+pub const TARGET: u8 = 17;
 
-const GROUND: u8 = 63;
-const TARGET: u8 = 17;
-
-fn kaktwoos(seed: u64, height: u8, n1: isize, n2: isize, nd: isize, bit: u64) -> u8 {
+pub fn kaktwoos(seed: u64, height: u8, n1: isize, n2: isize, nd: isize, bit: u64) -> (u8, isize) {
 	let mut rng = Rng::new(seed);
 	let mut map = [GROUND; 1024];
 	let mut pos = -1isize;
 	let mut top = height;
 	'outer: for i in 0..10 {
-		if GROUND + TARGET - top > 9 * (10 - i) { break 'outer; }
+		if GROUND + TARGET > 9 * (10 - i) + top { break 'outer; }
 		let ix = rng.next_int(16) + 8;
 		let iz = rng.next_int(16) + 8;
 		let ip = (iz * 32 + ix) as usize;
@@ -49,10 +47,10 @@ fn kaktwoos(seed: u64, height: u8, n1: isize, n2: isize, nd: isize, bit: u64) ->
 			if y != map[p] as i32 + 1 { continue; }
 			if y == GROUND as i32 + 1 {
 				let mut mask = 0;
-				if p & 0x1F != 0x00 { mask |= map[p - 0x01] ^ GROUND; }
-				if p & 0x1F != 0x1F { mask |= map[p + 0x01] ^ GROUND; }
-				if p >> 5   != 0x00 { mask |= map[p - 0x20] ^ GROUND; }
-				if p >> 5   != 0x1F { mask |= map[p + 0x20] ^ GROUND; }
+				if x != 0x00 { mask |= map[p - 0x01] ^ GROUND; }
+				if x != 0x1F { mask |= map[p + 0x01] ^ GROUND; }
+				if z != 0x00 { mask |= map[p - 0x20] ^ GROUND; }
+				if z != 0x1F { mask |= map[p + 0x20] ^ GROUND; }
 				if mask != 0 { continue; }
 			}
 			map[p] += h as u8;
@@ -61,18 +59,10 @@ fn kaktwoos(seed: u64, height: u8, n1: isize, n2: isize, nd: isize, bit: u64) ->
 			}
 		}
 	}
-	top - GROUND
+	(top - GROUND, pos)
 }
 
-fn main() {
-	// for i in 4500000000u64..6000000000u64 {
-	// 	if kaktwoos((i << 4) | 5, 75, 344, 840, 856, 16) {
-	// 		println!("{}", (i << 4) | 5);
-	// 	}
-	// }
-	for i in 0u64..100000000u64 {
-		if kaktwoos((i << 4) | 5, 75, 344, 840, 856, 16) >= TARGET {
-			println!("{}", (i << 4) | 5);
-		}
-	}
+#[test]
+fn test_kaktwoos() {
+	assert_eq!(kaktwoos(77849775653u64, 75, 344, 840, 856, 16).0, 20);
 }

@@ -27,7 +27,7 @@ impl Rng {
 	}
 
 	pub fn next_int(&mut self, bound: i32) -> i32 {
-		assert!(bound > 0);
+		debug_assert!(bound > 0);
 		if bound & -bound == bound {
 			return (self.next(31) as u64 * bound as u64 >> 31) as i32;
 		}
