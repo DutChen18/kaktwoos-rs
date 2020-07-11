@@ -12,8 +12,9 @@ extern "C" ull k2_start(int threads, ull begin, ull end, ull *out);
 inline ull k2_start_block(int threads, ull *offset, ull task_end, ull *out) {
 	ull end = *offset + THREAD_WORK_SIZE * threads;
 	if (end > task_end) end = task_end;
-	k2_start(threads, *offset, end, out);
+	ull result = k2_start(threads, *offset, end, out);
 	*offset = end;
+	return result;
 }
 
 #endif
