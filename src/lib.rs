@@ -37,7 +37,7 @@ fn run(begin: u64, end: u64, mutex: &Mutex<Vec<u64>>) {
 }
 
 #[no_mangle]
-pub extern "C" fn k2_params(cs: c_ulong, nn: *const c_int, di: c_int, ch: c_int) {
+pub extern "C" fn k2_params(cs: c_ulonglong, nn: *const c_int, di: c_int, ch: c_int) {
 	let neighbors = unsafe { slice::from_raw_parts(nn, 3) };
 	G_C4.store(cs & 15, Ordering::Relaxed);
 	G_C5.store(cs & 16, Ordering::Relaxed);
@@ -48,7 +48,7 @@ pub extern "C" fn k2_params(cs: c_ulong, nn: *const c_int, di: c_int, ch: c_int)
 }
 
 #[no_mangle]
-pub extern "C" fn k2_start(threads: c_int, begin: c_ulong, end: c_ulong, out: *mut c_ulong) -> c_ulong {
+pub extern "C" fn k2_start(threads: c_int, begin: c_ulonglong, end: c_ulonglong, out: *mut c_ulonglong) -> c_ulonglong {
 	let arc: Arc<Mutex<Vec<u64>>> = Arc::new(Mutex::new(Vec::new()));
 	if threads == 1 {
 		run(begin, end, &arc);
@@ -69,5 +69,5 @@ pub extern "C" fn k2_start(threads: c_int, begin: c_ulong, end: c_ulong, out: *m
 	}
 	let vec = Arc::try_unwrap(arc).unwrap().into_inner().unwrap();
 	unsafe { ptr::copy(vec.as_ptr(), out, vec.len()); }
-	vec.len() as c_ulong
+	vec.len() as c_ulonglong
 }

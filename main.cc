@@ -14,7 +14,7 @@ double time()
 
 int main(int argc, char **argv)
 {
-	static unsigned long out[1024 * 1024];
+	static unsigned long long out[1024 * 1024];
 	static int neighbors[] = { 856, 344, 840 };
 	k2_params(9567961692053UL, neighbors, 0, 12);
 	if (argc < 2) {
@@ -22,11 +22,11 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	int threads = atoi(argv[1]);
-	unsigned long count = 0;
-	unsigned long start = 4500000000UL;
-	unsigned long total = 1500000000UL;
+	unsigned long long count = 0;
+	unsigned long long start = 4500000000UL;
+	unsigned long long total = 1500000000UL;
 	double start_time = time();
-	for (unsigned long i = start; i < start + total; i += WORK_SIZE) {
+	for (unsigned long long i = start; i < start + total; i += WORK_SIZE) {
 		count += k2_start(threads, i, i + WORK_SIZE, out + count);
 	}
 	double end_time = time();
