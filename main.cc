@@ -3,8 +3,6 @@
 #include <chrono>
 #include "k2.h"
 
-#define WORK_SIZE 10000000UL
-
 double time()
 {
 	using namespace std::chrono;
@@ -26,8 +24,8 @@ int main(int argc, char **argv)
 	unsigned long long start = 4500000000UL;
 	unsigned long long total = 1500000000UL;
 	double start_time = time();
-	for (unsigned long long i = start; i < start + total; i += WORK_SIZE) {
-		count += k2_start(threads, i, i + WORK_SIZE, out + count);
+	for (unsigned long long i = start; i < start + total;) {
+		count += k2_start_block(threads, &i, total + start, out + count);
 	}
 	double end_time = time();
 	double elapsed = end_time - start_time;
