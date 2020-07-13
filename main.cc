@@ -24,14 +24,12 @@ int main(int argc, char **argv)
     int diagonalIndex = 0;
     int height = 0;
 
-    char *strend;
-
     struct checkpoint_vars {
-    unsigned long long offset;
-    unsigned long long start;
-    int block;
-    double elapsed_chkpoint;
-    int total_seed_count;
+        unsigned long long offset;
+        unsigned long long start;
+        int block;
+        double elapsed_chkpoint;
+        int total_seed_count;
     };
 
     if (argc % 2 != 1) {
@@ -44,11 +42,11 @@ int main(int argc, char **argv)
         if (strcmp(param, "-t") == 0 || strcmp(param, "--threads") == 0) {
             threads = atoi(argv[i + 1]);
         } else if (strcmp(param, "-s") == 0 || strcmp(param, "--start") == 0) {
-            sscanf(argv[i + 1], "%" SCNd64, &start);
+            sscanf(argv[i + 1], "%llu", &start);
         } else if (strcmp(param, "-e") == 0 || strcmp(param, "--end") == 0) {
-            sscanf(argv[i + 1], "%" SCNd64, &end);
+            sscanf(argv[i + 1], "%llu", &end);
         } else if (strcmp(param, "-cs") == 0 || strcmp(param, "--chunkseed") == 0) {
-            sscanf(argv[i + 1], "%" SCNd64, &chunkSeed);
+            sscanf(argv[i + 1], "%llu", &chunkSeed);
         } else if (strcmp(param, "-n1") == 0 || strcmp(param, "--neighbor1") == 0) {
             neighbor1 = atoi(argv[i + 1]);
         } else if (strcmp(param, "-n2") == 0 || strcmp(param, "--neighbor2") == 0) {
@@ -64,7 +62,7 @@ int main(int argc, char **argv)
         }
     }
 
-    fprintf(stderr,"Received work unit: %" SCNd64 "\n", chunkSeed);
+    fprintf(stderr,"Received work unit: %llu\n", chunkSeed);
     fprintf(stderr,"Data: n1: %d, n2: %d, n3: %d, di: %d, ch: %d\n",
             neighbor1,
             neighbor2,
@@ -75,7 +73,7 @@ int main(int argc, char **argv)
     static unsigned long long out[1024 * 1024];
     static int neighbors[] = { neighbor1, neighbor2, neighbor3 };
 
-	k2_params(chunkSeed, neighbors, diagonalIndex, height);
+    k2_params(chunkSeed, neighbors, diagonalIndex, height);
     if (argc < 2) {
         printf("usage: %s [threads]\n", argv[0]);
         return EXIT_FAILURE;
@@ -84,12 +82,9 @@ int main(int argc, char **argv)
     unsigned long long total = end - start;
     unsigned long long count = 0;
 
-
     double start_time = time();
     for (unsigned long long i = start; i < end; ) {
-
         count += k2_start_block(threads, &i, end, out + count);
-
     }
 
     double end_time = time();
@@ -97,5 +92,4 @@ int main(int argc, char **argv)
     double per_sec = total / elapsed;
     printf("%.2lfs %.2lfm/s\n", elapsed, per_sec / 1000000.0);
     return EXIT_SUCCESS;
-
 }
