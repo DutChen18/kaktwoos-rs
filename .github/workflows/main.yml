@@ -1,0 +1,25 @@
+name: kaktoos-rs-build
+
+on: [push]
+
+jobs:
+   linux_build:
+    name: kaktoos-rs/release/linux
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: |
+          cargo build --release
+          export $RUSTFLAGS="-C target-cpu=broadwell -C opt-level=3"
+          mkdir ./bin
+          cp ./target/release/libkaktwoos_rs.so ./bin/
+          g++ -m64 -O3 -o kaktwoos-rs main.cc bin/libkaktwoos_rs.so -Wall -Wextra -Iboinc/ -Lboinc/lib/lin -static-libgcc -static-libstdc++ -lboinc_api -lboinc -lboinc_opencl -pthread -Wl,-dynamic-linker,/lib64/ld-linux-x86-64.so.2          
+          ls -ls
+
+       - uses: actions/upload-artifact@v2
+         with:
+          name: kaktoos-rs-lin
+          path: ./kaktoos-rs*
