@@ -102,24 +102,29 @@ int main(int argc, char **argv)
 
     double start_time = time();
     for (unsigned long long i = start; i < end; ) {
-        count += k2_start_block(threads, &i, end, out + count);
+        count = k2_start_block(threads, &i, end, out);
         progcheck++;
 
-        if (progcheck > 125) {
+        for (unsigned long long j = 0; j < count; j++) {
+        fprintf(stderr, "%llu\n", out[j]);
+        }
 
+        if (progcheck > 125) {
         double frac = ( double(i - start) / (total) );
         boinc_fraction_done(frac);
 
         progcheck=0;
         //checkpointing goes here
         }
-
     }
 
+    fflush(stderr);
     double end_time = time();
     double elapsed = end_time - start_time;
     double per_sec = total / elapsed;
+    fprintf(stderr,"Done!");
     fprintf(stderr,"%.2lfs %.2lfm/s\n", elapsed, per_sec / 1000000.0);
+    fflush(stderr);
     boinc_finish(0);
 
 }
