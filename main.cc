@@ -202,9 +202,9 @@ int main(int argc, char **argv)
 	double end_time = time();
 	double elapsed = elapsed_chkpoint + end_time - start_time;
 	double per_sec = total / elapsed;
-	fprintf(stderr, "Speed (", (per_sec / 1000000.0) / threads, " per-core): %.2lfm/s\n", per_sec / 1000000.0);
+	fprintf(stderr, "\nSpeed (%.2lfm/s * %i t): %.2lfm/s\n", ((per_sec / 1000000.0) / threads), threads, per_sec / 1000000.0 );
 	fprintf(stderr, "Done\n");
-	fprintf(stderr, "Processed: ", total, " seeds in ", elapsed, " seconds");
+	fprintf(stderr, "Processed: %llu seeds in %.2lfs seconds\n", total, elapsed);
 	
     fprintf(stderr, "Found seeds: \n");
 
