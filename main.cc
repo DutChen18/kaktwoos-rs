@@ -5,6 +5,16 @@
 #include <inttypes.h>
 #include "k2.h"
 
+#ifdef _WIN64
+#include "boinc_win.h"
+#else
+#ifdef _WIN32
+#include "boinc_win.h"
+#endif
+#endif
+
+#include "boinc_api.h"
+
 double time()
 {
     using namespace std::chrono;
@@ -14,6 +24,13 @@ double time()
 
 int main(int argc, char **argv)
 {
+
+    BOINC_OPTIONS options;
+
+    boinc_options_defaults(options);
+    options.normal_thread_priority = true;
+    boinc_init_options(&options);
+
     int threads = 0;
     unsigned long long start = 0;
     unsigned long long end = 0;
@@ -33,7 +50,7 @@ int main(int argc, char **argv)
     };
 
     if (argc % 2 != 1) {
-        printf("Failed to parse arguments\n");
+        fprintf(stderr,"Failed to parse arguments\n");
         exit(EXIT_FAILURE);
     }
 
@@ -58,7 +75,7 @@ int main(int argc, char **argv)
         } else if (strcmp(param, "-ch") == 0 || strcmp(param, "--cactusheight") == 0) {
             height = atoi(argv[i + 1]);
         } else {
-            printf("Unknown parameter: %s\n", param);
+            fprintf(stderr,"Unknown parameter: %s\n", param);
         }
     }
 
@@ -75,21 +92,40 @@ int main(int argc, char **argv)
 
     k2_params(chunkSeed, neighbors, diagonalIndex, height);
     if (argc < 2) {
-        printf("usage: %s [threads]\n", argv[0]);
+        fprintf(stderr,"usage: %s [threads]\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     unsigned long long total = end - start;
     unsigned long long count = 0;
+    int progcheck = 0;
 
     double start_time = time();
     for (unsigned long long i = start; i < end; ) {
-        count += k2_start_block(threads, &i, end, out + count);
+        count = k2_start_block(threads, &i, end, out);
+        progcheck++;
+
+        for (unsigned long long j = 0; j < count; j++) {
+        fprintf(stderr, "%llu\n", out[j]);
+        }
+
+        if (progcheck > 125) {
+        double frac = ( double(i - start) / (total) );
+        boinc_fraction_done(frac);
+
+        progcheck=0;
+        //checkpointing goes here
+        }
     }
 
+    fflush(stderr);
     double end_time = time();
     double elapsed = end_time - start_time;
     double per_sec = total / elapsed;
-    printf("%.2lfs %.2lfm/s\n", elapsed, per_sec / 1000000.0);
-    return EXIT_SUCCESS;
+    fprintf(stderr,"Done!");
+    fprintf(stderr,"%.2lfs %.2lfm/s\n", elapsed, per_sec / 1000000.0);
+    fflush(stderr);
+    boinc_finish(0);
+
 }
+
