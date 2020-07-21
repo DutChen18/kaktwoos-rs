@@ -1,7 +1,7 @@
 use crate::rng::*;
 
 pub const GROUND: u8 = 63;
-pub const TARGET: u8 = 17;
+pub const TARGET: u8 = 20;
 
 pub fn kaktwoos(seed: u64, height: u8, n1: isize, n2: isize, nd: isize, bit: u64) -> (u8, isize) {
 	let mut rng = Rng::new(seed);
