@@ -22,5 +22,5 @@ jobs:
          
       - uses: actions/upload-artifact@v2
         with:
-          name: kaktoos-rs-lin
-          path: ./kaktoos-rs*
+          name: kaktwoos-rs-lin
+          path: ./kaktwoos-rs*
