@@ -1,4 +1,4 @@
-name: kaktoos-rs-build
+name: kaktwoos-rs-build-linux-x86
 
 on: [push]
 
@@ -24,4 +24,3 @@ jobs:
         with:
           name: kaktoos-rs-lin
           path: ./kaktoos-rs*
-
